@@ -4,7 +4,6 @@ import os
 import sys
 import yaml
 
-# TODO
 LUALIB = "/home/alex/Repos/sol/sol"
 OUT = "/tmp/out.lua"
 

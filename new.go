@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"os"
@@ -11,23 +10,6 @@ import (
 	"github.com/alexcoder04/friendly"
 )
 
-// TODO import from friendly
-func writeToNewFile(fname string, data string) error {
-	f, err := os.Create(fname)
-	if err != nil {
-		return err
-	}
-
-	w := bufio.NewWriter(f)
-	_, err = w.WriteString("[]")
-	if err != nil {
-		return err
-	}
-
-	err = w.Flush()
-	return err
-}
-
 func New(projectName string) error {
 	for _, c := range []string{"/", ".", "\\"} {
 		if strings.Contains(projectName, c) {
@@ -35,8 +17,7 @@ func New(projectName string) error {
 		}
 	}
 
-	// TODO import from friendly Exists()
-	if friendly.IsDir(projectName) {
+	if friendly.Exists(projectName) {
 		return os.ErrExist
 	}
 
@@ -52,7 +33,7 @@ func New(projectName string) error {
 		}
 	}
 
-	err := writeToNewFile(path.Join(projectName, "res", "data", "menu.yml"), "[]")
+	err := friendly.WriteNewFile(path.Join(projectName, "res", "data", "menu.yml"), "[]")
 	if err != nil {
 		return err
 	}
@@ -62,7 +43,7 @@ func New(projectName string) error {
 		return err
 	}
 
-	err = writeToNewFile(path.Join(projectName, "Makefile"), fmt.Sprintf(`
+	err = friendly.WriteNewFile(path.Join(projectName, "Makefile"), fmt.Sprintf(`
 SOL = %s/sol
 UPLOADNSPIRE = uploadnspire
 NAME = helloworld
@@ -85,12 +66,12 @@ upload:
 		return err
 	}
 
-	err = writeToNewFile(path.Join(projectName, "README.md"), "# helloworld application for the ti-nspire")
+	err = friendly.WriteNewFile(path.Join(projectName, "README.md"), "# helloworld application for the ti-nspire")
 	if err != nil {
 		return err
 	}
 
-	err = writeToNewFile(path.Join(projectName, "app.lua"), `
+	err = friendly.WriteNewFile(path.Join(projectName, "app.lua"), `
 hello_world_element = Components.Base.TextField:new()
 hello_world_element.Label = "Hello World"
 

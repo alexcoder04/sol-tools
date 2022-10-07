@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 
@@ -91,25 +90,6 @@ func appendFolder(projectFolder string, libFolder string, subfolder string, type
 	return nil
 }
 
-// TODO import from friendly
-func prepareCommand(command string, arguments []string, workingDir string) *exec.Cmd {
-	if workingDir == "" {
-		workingDir = friendly.Getpwd()
-	}
-
-	cmd := exec.Command(command, arguments...)
-	cmd.Dir = workingDir
-
-	return cmd
-}
-
-// TODO import from friendly
-func GetOutput(command string, arguments []string, workingDir string) (string, error) {
-	cmd := prepareCommand(command, arguments, workingDir)
-	out, err := cmd.Output()
-	return string(out), err
-}
-
 func appendData(projectFolder string, w *bufio.Writer) error {
 	files, err := ioutil.ReadDir(path.Join(projectFolder, "res", "data"))
 	if err != nil {
@@ -124,7 +104,7 @@ func appendData(projectFolder string, w *bufio.Writer) error {
 
 func appendComponents(projectFolder string, w *bufio.Writer) error {
 	fmt.Println("#compile components/")
-	data, err := GetOutput(PYTHONLIB, []string{
+	data, err := friendly.GetOutput(PYTHONLIB, []string{
 		"compile_components",
 		projectFolder,
 		""}, "")
@@ -137,7 +117,7 @@ func appendComponents(projectFolder string, w *bufio.Writer) error {
 
 func appendMenu(projectFolder string, w *bufio.Writer) error {
 	fmt.Println("#compile res/data/menu.yml")
-	data, err := GetOutput(PYTHONLIB, []string{
+	data, err := friendly.GetOutput(PYTHONLIB, []string{
 		"compile_menu",
 		projectFolder,
 		""}, "")
@@ -156,8 +136,7 @@ func resolvePath(folder string) (string, error) {
 }
 
 func Build(pfolder string) error {
-	// TODO use Exists() from friendly
-	if friendly.IsFile(OUT_LUA) {
+	if friendly.Exists(OUT_LUA) {
 		err := os.RemoveAll(OUT_LUA)
 		if err != nil {
 			return err
