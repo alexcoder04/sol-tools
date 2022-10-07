@@ -12,18 +12,15 @@ import (
 	"github.com/alexcoder04/friendly"
 )
 
-var OUT_LUA = path.Join(os.TempDir(), "out.lua")
-
-// TODO find actual library path
-const LUALIB = "/home/alex/Repos/sol-lib"
-
 // TODO replace with go code
 const PYTHONLIB = "/home/alex/Repos/sol-tools/python/libsol.py"
 
-func appendFile(projectFolder string, filename string, type_ string, w *bufio.Writer) error {
+var OUT_LUA = path.Join(os.TempDir(), "out.lua")
+
+func appendFile(projectFolder string, libFolder string, filename string, type_ string, w *bufio.Writer) error {
 	var prefix string = "."
 	if type_ == "include" {
-		prefix = LUALIB
+		prefix = libFolder
 	}
 	if type_ == "process" {
 		prefix = projectFolder
@@ -58,19 +55,19 @@ func appendFile(projectFolder string, filename string, type_ string, w *bufio.Wr
 			return err
 		}
 	}
-	_, err = w.WriteString(fmt.Sprintf("\n-- END %s:%s", type_, filename))
+	_, err = w.WriteString(fmt.Sprintf("\n-- END %s:%s\n", type_, filename))
 	return err
 }
 
-func appendFolder(projectFolder string, subfolder string, type_ string, w *bufio.Writer) error {
-	err := appendFile(projectFolder, path.Join(subfolder, "_init.lua"), type_, w)
+func appendFolder(projectFolder string, libFolder string, subfolder string, type_ string, w *bufio.Writer) error {
+	err := appendFile(projectFolder, libFolder, path.Join(subfolder, "_init.lua"), type_, w)
 	if err != nil {
 		return err
 	}
 
 	var folderAbs string = "."
 	if type_ == "include" {
-		folderAbs = path.Join(LUALIB, subfolder)
+		folderAbs = path.Join(libFolder, subfolder)
 	}
 	if type_ == "process" {
 		folderAbs = path.Join(projectFolder, subfolder)
@@ -85,7 +82,7 @@ func appendFolder(projectFolder string, subfolder string, type_ string, w *bufio
 		if file.Name() == "_init.lua" {
 			continue
 		}
-		err := appendFile(projectFolder, path.Join(subfolder, file.Name()), type_, w)
+		err := appendFile(projectFolder, libFolder, path.Join(subfolder, file.Name()), type_, w)
 		if err != nil {
 			return err
 		}
@@ -176,6 +173,11 @@ func Build(pfolder string) error {
 		return os.ErrNotExist
 	}
 
+	libPath, err := GetLibrary()
+	if err != nil {
+		return err
+	}
+
 	f, err := os.Create(OUT_LUA)
 	if err != nil {
 		return err
@@ -185,17 +187,17 @@ func Build(pfolder string) error {
 	w := bufio.NewWriter(f)
 
 	// framework: main file
-	err = appendFile(folder, "app.lua", "include", w)
+	err = appendFile(folder, libPath, "app.lua", "include", w)
 	if err != nil {
 		return err
 	}
 	// framework: library
-	err = appendFolder(folder, "library", "include", w)
+	err = appendFolder(folder, libPath, "library", "include", w)
 	if err != nil {
 		return err
 	}
 	// framework: components
-	err = appendFolder(folder, "components", "include", w)
+	err = appendFolder(folder, libPath, "components", "include", w)
 	if err != nil {
 		return err
 	}
@@ -212,7 +214,7 @@ func Build(pfolder string) error {
 	}
 	// project: lua code
 	for _, file := range []string{"app.lua", "init.lua", "hooks.lua"} {
-		err := appendFile(folder, file, "process", w)
+		err := appendFile(folder, libPath, file, "process", w)
 		if err != nil {
 			return err
 		}
@@ -224,7 +226,7 @@ func Build(pfolder string) error {
 	}
 
 	// library: events
-	err = appendFile(folder, "events.lua", "include", w)
+	err = appendFile(folder, libPath, "events.lua", "include", w)
 	if err != nil {
 		return err
 	}
