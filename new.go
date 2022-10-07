@@ -11,7 +11,7 @@ import (
 	"github.com/alexcoder04/friendly"
 )
 
-// TODO move to friendly
+// TODO import from friendly
 func writeToNewFile(fname string, data string) error {
 	f, err := os.Create(fname)
 	if err != nil {
@@ -35,7 +35,7 @@ func New(projectName string) error {
 		}
 	}
 
-	// TODO implement friendly.Exists
+	// TODO import from friendly Exists()
 	if friendly.IsDir(projectName) {
 		return os.ErrExist
 	}

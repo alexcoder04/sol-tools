@@ -12,4 +12,4 @@ For docs see [here](https://alexcoder04.github.io/sol-docs/).
  - [ ] handling images
  - [ ] about dialog using data from `app.lua`
  - [ ] move metadata from `app.lua` to `solproj.yml`
- - [ ] automatically wrap the contents of `init.lua` inside init function
+ - [x] automatically wrap the contents of `init.lua` inside init function

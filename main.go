@@ -13,6 +13,12 @@ func main() {
 			os.Exit(1)
 		}
 		New(os.Args[2])
+	case "build":
+		if len(os.Args) < 3 {
+			fmt.Println("You need to specify the project folder")
+			os.Exit(1)
+		}
+		Build(os.Args[2])
 	default:
 		fmt.Println("Command not known")
 		os.Exit(1)
