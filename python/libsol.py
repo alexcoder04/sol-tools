@@ -2,35 +2,14 @@
 # Some Python functions still in use for Sol in the Go version
 # TODO: only temporary solution
 
+import os
 import sys
 import yaml
 
-def pydict_toluatable(data: dict, prefix: str) -> str:
-    lines = [f"\n{prefix} = {{}}"]
-    for key in data:
-        res = lua_escape(data[key], prefix)
-        if type(res) == list:
-            for i in res:
-                lines.append(i)
-            continue
-        lines.append(f"\n{prefix}.{key} = {res}")
-    return lines
-
-def compile_data(folder: str, filename: str) -> None:
-    print(f"#compile res/data/{filename}")
-    with open(f"{folder}/res/data/{filename}", "r") as fi:
-        data = yaml.safe_load(fi)
-        dname = filename.replace(".yml", "")
-        print(f"-- BEGIN compile:{filename}")
-        for line in pydict_toluatable(data, f"App.Data.Const.{dname}"):
-            print(line)
-        print(f"-- END compile:{filename}")
-
 def compile_component(folder: str, filename: str) -> (str, list[str], str):
-    print(f"#compile components/{filename}")
     with open(f"{folder}/components/{filename}", "r") as f:
         comp = yaml.safe_load(f)
-        comp_name = file.split(".")[0]
+        comp_name = filename.split(".")[0]
         lua_code = [
             f"\nComponents.Custom.{comp_name} = Components.{comp['Inherit']}:new()",
             f"function Components.Custom.{comp_name}:new(o)",
@@ -63,7 +42,7 @@ def compile_component(folder: str, filename: str) -> (str, list[str], str):
 def compile_components(folder: str) -> None:
         components = []
         for file in os.listdir(f"{folder}/components"):
-            components.append(compile_component(file, fo))
+            components.append(compile_component(folder, file))
         components_sorted = []
         loop_detector = 0
         while len(components) > 0:
@@ -83,7 +62,7 @@ def compile_components(folder: str) -> None:
             if loop_detector > 99:
                 die("Component inheritance loop deteted")
         for i in components_sorted:
-            print(f"\n-- BEGIN compile:components/{i[0]}")
+            print(f"-- BEGIN compile:components/{i[0]}")
             for line in i[1]:
                 print(line + "\n")
             print(f"-- END compile:components/{i[0]}")
@@ -98,7 +77,7 @@ def compile_menu(folder: str) -> None:
                 {
                     "Id": "about",
                     "Name": "About",
-                    "Function": "Library.Internal:ShowAboutDialog()"
+                    "Function": "Lib.Internal:ShowAboutDialog()"
                 }
             ]
         })
@@ -121,9 +100,6 @@ if __name__ == "__main__":
         print("too few arguments")
         sys.exit(1)
     
-    if sys.argv[1] == "compile_data":
-        compile_data(sys.argv[2], sys.argv[3])
-
     if sys.argv[1] == "compile_components":
         compile_components(sys.argv[2])
 

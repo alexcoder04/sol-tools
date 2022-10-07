@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 
 	"github.com/alexcoder04/friendly"
 )
@@ -39,12 +40,24 @@ func appendFile(projectFolder string, filename string, type_ string, w *bufio.Wr
 	if err != nil {
 		return err
 	}
+	if filename == "init.lua" && type_ == "process" {
+		_, err := w.WriteString("\nfunction init()")
+		if err != nil {
+			return err
+		}
+	}
 
 	_, err = w.Write(content)
 	if err != nil {
 		return err
 	}
 
+	if filename == "init.lua" && type_ == "process" {
+		_, err := w.WriteString("\nend")
+		if err != nil {
+			return err
+		}
+	}
 	_, err = w.WriteString(fmt.Sprintf("\n-- END %s:%s", type_, filename))
 	return err
 }
@@ -97,10 +110,7 @@ func prepareCommand(command string, arguments []string, workingDir string) *exec
 func GetOutput(command string, arguments []string, workingDir string) (string, error) {
 	cmd := prepareCommand(command, arguments, workingDir)
 	out, err := cmd.Output()
-	if err != nil {
-		return "", err
-	}
-	return string(out), nil
+	return string(out), err
 }
 
 func appendData(projectFolder string, w *bufio.Writer) error {
@@ -109,18 +119,8 @@ func appendData(projectFolder string, w *bufio.Writer) error {
 		return err
 	}
 	for _, file := range files {
-		fmt.Printf("#compile res/data/%s\n", file.Name())
-		data, err := GetOutput(PYTHONLIB, []string{
-			"compile_data",
-			projectFolder,
-			file.Name()}, "")
-		if err != nil {
-			return err
-		}
-		_, err = w.WriteString(data)
-		if err != nil {
-			return err
-		}
+		fmt.Printf("#compile res/data/%s -> skipping!\n", file.Name())
+		// TODO
 	}
 	return nil
 }
@@ -151,13 +151,29 @@ func appendMenu(projectFolder string, w *bufio.Writer) error {
 	return err
 }
 
-func Build(folder string) error {
+func resolvePath(folder string) (string, error) {
+	if path.IsAbs(folder) {
+		return folder, nil
+	}
+	return filepath.Abs(folder)
+}
+
+func Build(pfolder string) error {
 	// TODO use Exists() from friendly
 	if friendly.IsFile(OUT_LUA) {
 		err := os.RemoveAll(OUT_LUA)
 		if err != nil {
 			return err
 		}
+	}
+
+	folder, err := resolvePath(pfolder)
+	if err != nil {
+		return err
+	}
+
+	if !friendly.IsDir(folder) {
+		return os.ErrNotExist
 	}
 
 	f, err := os.Create(OUT_LUA)
@@ -196,21 +212,9 @@ func Build(folder string) error {
 	}
 	// project: lua code
 	for _, file := range []string{"app.lua", "init.lua", "hooks.lua"} {
-		if file == "init.lua" {
-			_, err := w.WriteString("function init()\n")
-			if err != nil {
-				return err
-			}
-		}
 		err := appendFile(folder, file, "process", w)
 		if err != nil {
 			return err
-		}
-		if file == "init.lua" {
-			_, err := w.WriteString("end\n")
-			if err != nil {
-				return err
-			}
 		}
 	}
 	// project: menu
