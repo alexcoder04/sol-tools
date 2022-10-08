@@ -8,11 +8,12 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/alexcoder04/arrowprint"
 	"github.com/alexcoder04/friendly"
 )
 
 // TODO replace with go code
-const PYTHONLIB = "/home/alex/Repos/sol-tools/python/libsol.py"
+var PYTHONLIB = "libpysol"
 
 var OUT_LUA = path.Join(os.TempDir(), "out.lua")
 
@@ -136,6 +137,8 @@ func resolvePath(folder string) (string, error) {
 }
 
 func Build(pfolder string) error {
+	arrowprint.InfoC("Building your project at %s", pfolder)
+	arrowprint.Info1("Doing initial checks")
 	if friendly.Exists(OUT_LUA) {
 		err := os.RemoveAll(OUT_LUA)
 		if err != nil {
@@ -152,6 +155,7 @@ func Build(pfolder string) error {
 		return os.ErrNotExist
 	}
 
+	arrowprint.Info1("Getting sol library")
 	libPath, err := GetLibrary()
 	if err != nil {
 		return err
@@ -215,6 +219,6 @@ func Build(pfolder string) error {
 		return err
 	}
 
-	fmt.Println("All files merged succesfully")
+	arrowprint.Suc0("All files merged succesfully")
 	return nil
 }
