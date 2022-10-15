@@ -11,3 +11,9 @@ type SubmenuEntry struct {
 	Name     string `yaml:"Name"`
 	Function string `yaml:"Submenues"`
 }
+
+type Component struct {
+	Name   string
+	Parent string
+	Code   []string
+}
