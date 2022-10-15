@@ -12,4 +12,5 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/otiai10/copy v1.7.0 // indirect
 	golang.org/x/sys v0.0.0-20221010170243-090e33056c14 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

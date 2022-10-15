@@ -6,6 +6,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/alexcoder04/arrowprint"
 	"github.com/alexcoder04/friendly"
 )
 
@@ -24,13 +25,13 @@ func GetLibrary() (string, error) {
 		return path.Join(libFolder, fmt.Sprintf("sol-lib-%s", VERSION)), nil
 	}
 
-	fmt.Printf("Downloading sol-lib v%s...\n", VERSION)
+	arrowprint.Info1("Downloading sol-lib v%s...\n", VERSION)
 	err := friendly.DownloadFile(url, zipFile)
 	if err != nil {
 		return "", err
 	}
 
-	fmt.Printf("Extracting sol-lib v%s...\n", VERSION)
+	arrowprint.Info1("Extracting sol-lib v%s...\n", VERSION)
 	err = friendly.UncompressFolder(zipFile, libFolder)
 	if err != nil {
 		return "", err

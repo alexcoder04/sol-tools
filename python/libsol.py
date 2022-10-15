@@ -67,34 +67,6 @@ def compile_components(folder: str) -> None:
                 print(line + "\n")
             print(f"-- END compile:components/{i[0]}")
 
-def compile_menu(folder: str) -> None:
-    with open(f"{folder}/res/data/menu.yml", "r") as fi:
-        menu = yaml.safe_load(fi)
-        menu.append({
-            "Id": "help",
-            "Name": "Help",
-            "Submenues": [
-                {
-                    "Id": "about",
-                    "Name": "About",
-                    "Function": "Lib.Internal:ShowAboutDialog()"
-                }
-            ]
-        })
-        categories = []
-        functions = []
-        for cat in menu:
-            submenues = []
-            for sm in cat["Submenues"]:
-                submenues.append(f"{{\"{sm['Name']}\", _menu_{cat['Id']}_{sm['Id']}}}")
-            functions.append(f"function _menu_{cat['Id']}_{sm['Id']}() {sm['Function']} end")
-            categories.append(f"{{\"{cat['Name']}\", {', '.join(submenues)}}}")
-    print(f"-- BEGIN compile:res/data/menu.yml")
-    for i in functions:
-        print(i)
-    print(f"toolpalette.register({{{', '.join(categories)}}})")
-    print(f"-- END compile:res/data/menu.yml")
-
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         print("too few arguments")
@@ -102,6 +74,3 @@ if __name__ == "__main__":
     
     if sys.argv[1] == "compile_components":
         compile_components(sys.argv[2])
-
-    if sys.argv[1] == "compile_menu":
-        compile_menu(sys.argv[2])

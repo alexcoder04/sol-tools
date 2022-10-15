@@ -7,9 +7,11 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/alexcoder04/arrowprint"
 	"github.com/alexcoder04/friendly"
+	"gopkg.in/yaml.v3"
 )
 
 // TODO replace with go code
@@ -118,15 +120,66 @@ func appendComponents(projectFolder string, w *bufio.Writer) error {
 
 func appendMenu(projectFolder string, w *bufio.Writer) error {
 	fmt.Println("#compile res/data/menu.yml")
-	data, err := friendly.GetOutput(PYTHONLIB, []string{
-		"compile_menu",
-		projectFolder,
-		""}, "")
+	var menu []MenuEntry
+	data, err := ioutil.ReadFile(path.Join(projectFolder, "res", "data", "menu.yml"))
 	if err != nil {
 		return err
 	}
-	_, err = w.WriteString(data)
+	err = yaml.Unmarshal(data, &menu)
+	if err != nil {
+		return err
+	}
+	menu = append(menu, MenuEntry{
+		"help",
+		"Help",
+		[]SubmenuEntry{
+			{
+				"about",
+				"About",
+				"Library.Internal.ShowAboutDialog()"}}})
+	var categories []string
+	var functions []string
+	for _, c := range menu {
+		var submenues []string
+		for _, s := range c.Submenues {
+			submenues = append(submenues, fmt.Sprintf(
+				"{\"%s\", _menu_%s_%s}",
+				s.Name, c.Id, s.Id))
+			functions = append(functions, fmt.Sprintf(
+				"function _menu_%s_%s() %s end\n",
+				c.Id, s.Id, s.Function))
+		}
+		categories = append(categories, fmt.Sprintf(
+			"{\"%s\", %s}",
+			c.Name, strings.Join(submenues, ", ")))
+	}
+	_, err = w.WriteString("\n-- BEGIN compile:res/data/menu.yml\n")
+	if err != nil {
+		return err
+	}
+	for _, f := range functions {
+		_, err := w.WriteString(f)
+		if err != nil {
+			return err
+		}
+	}
+	_, err = w.WriteString(fmt.Sprintf(
+		"toolpalette.register({%s})",
+		strings.Join(categories, ", ")))
+	if err != nil {
+		return err
+	}
+	_, err = w.WriteString("\n-- END compile:res/data/menu.yml\n")
 	return err
+	//data, err := friendly.GetOutput(PYTHONLIB, []string{
+	//	"compile_menu",
+	//	projectFolder,
+	//	""}, "")
+	//if err != nil {
+	//	return err
+	//}
+	//_, err = w.WriteString(data)
+	//return err
 }
 
 func resolvePath(folder string) (string, error) {
@@ -184,6 +237,8 @@ func Build(pfolder string) error {
 	if err != nil {
 		return err
 	}
+	// TODO remove as new lib version is published
+	w.WriteString("Lib = Library\n")
 
 	// project: data
 	err = appendData(folder, w)
