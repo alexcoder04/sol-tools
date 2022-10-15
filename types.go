@@ -9,7 +9,7 @@ type MenuEntry struct {
 type SubmenuEntry struct {
 	Id       string `yaml:"Id"`
 	Name     string `yaml:"Name"`
-	Function string `yaml:"Submenues"`
+	Function string `yaml:"Function"`
 }
 
 type Component struct {

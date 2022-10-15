@@ -17,6 +17,14 @@ func GetUrl() string {
 }
 
 func GetLibrary() (string, error) {
+	if os.Getenv("SOL_USE_LOCAL_LIB") == "1" {
+		folder := os.Getenv("SOL_LOCAL_LIB_PATH")
+		if !friendly.IsDir(folder) {
+			return "", os.ErrNotExist
+		}
+		return folder, nil
+	}
+
 	url := GetUrl()
 	zipFile := path.Join(os.TempDir(), "sol.zip")
 	libFolder := strings.TrimRight(zipFile, ".zip")

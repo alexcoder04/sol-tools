@@ -248,7 +248,7 @@ func appendMenu(projectFolder string, w *bufio.Writer) error {
 			{
 				"about",
 				"About",
-				"Library.Internal.ShowAboutDialog()"}}})
+				"Lib.Internal.ShowAboutDialog()"}}})
 	var categories []string
 	var functions []string
 	for _, c := range menu {
@@ -340,8 +340,6 @@ func Build(pfolder string) error {
 	if err != nil {
 		return err
 	}
-	// TODO remove as new lib version is published
-	w.WriteString("Lib = Library\n")
 
 	// project: data
 	err = appendData(folder, w)
