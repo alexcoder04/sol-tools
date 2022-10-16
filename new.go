@@ -56,7 +56,7 @@ OUT_FILE = %s/$(NAME).tns
 all: clean build upload
 
 build:
-	$(SOL) build .
+	$(SOL) -a build .
 	luna $(TEMP_LUA) $(OUT_FILE)
 
 clean:
@@ -72,7 +72,7 @@ upload:
 	arrowprint.Info1("Generating README.md file")
 	err = friendly.WriteNewFile(
 		path.Join(projectName, "README.md"),
-		fmt.Sprintf("# %s\nAn for the ti-nspire", projectName))
+		fmt.Sprintf("# %s\nAn app for the ti-nspire", projectName))
 	if err != nil {
 		return err
 	}
@@ -83,6 +83,15 @@ hello_world_element = Components.Base.TextField:new()
 hello_world_element.Label = "Hello World"
 
 App:AddElement(hello_world_element)
+`)
+	if err != nil {
+		return err
+	}
+
+	arrowprint.Info1("Creating solproj.yml file")
+	err = friendly.WriteNewFile(path.Join(projectName, "solproj.yml"), `
+RefreshRate = 0.5
+SolVersion = 0
 `)
 	if err != nil {
 		return err

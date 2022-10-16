@@ -71,6 +71,11 @@ func Build(pfolder string) error {
 	if err != nil {
 		return err
 	}
+	// project: metadata
+	err = appendMetadata(folder, w)
+	if err != nil {
+		return err
+	}
 	// project: lua code
 	for _, file := range []string{"app.lua", "init.lua", "hooks.lua"} {
 		err := appendFile(folder, libPath, file, "process", w)

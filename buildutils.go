@@ -273,3 +273,26 @@ func appendMenu(projectFolder string, w *bufio.Writer) error {
 	_, err = w.WriteString("\n-- END compile:res/data/menu.yml\n")
 	return err
 }
+
+func appendMetadata(projectFolder string, w *bufio.Writer) error {
+	fmt.Println("#compile solproj.yml")
+	var metadata map[string]string
+	data, err := ioutil.ReadFile(path.Join(projectFolder, "solproj.yml"))
+	if err != nil {
+		return err
+	}
+
+	err = yaml.Unmarshal(data, &metadata)
+	if err != nil {
+		return err
+	}
+
+	for key, val := range metadata {
+		_, err := w.WriteString(fmt.Sprintf("App.%s = %s\n", key, val))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
