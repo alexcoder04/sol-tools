@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path"
-	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -98,12 +97,6 @@ func appendData(projectFolder string, w *bufio.Writer) error {
 	return nil
 }
 
-// TODO friendly
-func isNumber(s string) bool {
-	_, err := strconv.Atoi(s)
-	return err == nil
-}
-
 func compileComponent(projectFolder string, name string, w *bufio.Writer) (string, string, []string, error) {
 	data, err := ioutil.ReadFile(path.Join(projectFolder, "components", name))
 	if err != nil {
@@ -153,16 +146,6 @@ func compileComponent(projectFolder string, name string, w *bufio.Writer) (strin
 	luaCode = append(luaCode, "  return o")
 	luaCode = append(luaCode, "end")
 	return compName, comp["Inherit"], luaCode, nil
-}
-
-// TODO friendly
-func stringArrayContains(arr []string, value string) bool {
-	for _, v := range arr {
-		if v == value {
-			return true
-		}
-	}
-	return false
 }
 
 func appendComponents(projectFolder string, w *bufio.Writer) error {
