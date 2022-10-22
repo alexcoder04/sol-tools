@@ -33,13 +33,13 @@ func GetLibrary() (string, error) {
 		return path.Join(libFolder, fmt.Sprintf("sol-lib-%s", VERSION)), nil
 	}
 
-	arrowprint.Info1("Downloading sol-lib v%s...\n", VERSION)
+	arrowprint.Info1("Downloading sol-lib v%s...", VERSION)
 	err := friendly.DownloadFile(url, zipFile)
 	if err != nil {
 		return "", err
 	}
 
-	arrowprint.Info1("Extracting sol-lib v%s...\n", VERSION)
+	arrowprint.Info1("Extracting sol-lib v%s...", VERSION)
 	err = friendly.UncompressFolder(zipFile, libFolder)
 	if err != nil {
 		return "", err

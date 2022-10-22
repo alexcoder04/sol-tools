@@ -10,17 +10,9 @@ import (
 	"github.com/alexcoder04/friendly"
 )
 
-var OUT_LUA = path.Join(os.TempDir(), "out.lua")
-
 func Build(pfolder string) error {
 	arrowprint.InfoC("Building your project at %s", pfolder)
 	arrowprint.Info1("Doing initial checks")
-	if friendly.Exists(OUT_LUA) {
-		err := os.RemoveAll(OUT_LUA)
-		if err != nil {
-			return err
-		}
-	}
 
 	folder, err := filepath.Abs(pfolder)
 	if err != nil {
@@ -29,6 +21,15 @@ func Build(pfolder string) error {
 
 	if !friendly.IsDir(folder) {
 		return os.ErrNotExist
+	}
+
+	OUT_LUA := path.Join(folder, "out.lua")
+
+	if friendly.Exists(OUT_LUA) {
+		err := os.RemoveAll(OUT_LUA)
+		if err != nil {
+			return err
+		}
 	}
 
 	arrowprint.Info1("Getting sol library")
@@ -78,6 +79,9 @@ func Build(pfolder string) error {
 	}
 	// project: lua code
 	for _, file := range []string{"app.lua", "init.lua", "hooks.lua"} {
+		if !friendly.IsFile(path.Join(folder, file)) && file != "app.lua" {
+			continue
+		}
 		err := appendFile(folder, libPath, file, "process", w)
 		if err != nil {
 			return err
@@ -101,5 +105,8 @@ func Build(pfolder string) error {
 	}
 
 	arrowprint.Suc0("All files merged succesfully")
+	arrowprint.Suc1("Result written to %s", OUT_LUA)
+
+	arrowprint.Info0("You can now either copy the result into the TI student software or compile it into .tns with Luna")
 	return nil
 }
