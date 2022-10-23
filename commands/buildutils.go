@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"bufio"
@@ -8,6 +8,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/alexcoder04/sol-tools/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -132,7 +133,7 @@ func compileComponent(projectFolder string, name string, w *bufio.Writer) (strin
 			luaCode = append(luaCode, fmt.Sprintf("  self.%s = %s", key, val))
 			continue
 		}
-		if val == "true" || val == "false" || isNumber(val) {
+		if val == "true" || val == "false" || utils.IsNumber(val) {
 			luaCode = append(luaCode, fmt.Sprintf("  self.%s = %s", key, val))
 			continue
 		}
@@ -150,14 +151,14 @@ func compileComponent(projectFolder string, name string, w *bufio.Writer) (strin
 
 func appendComponents(projectFolder string, w *bufio.Writer) error {
 	fmt.Println("#compile components/")
-	components := make(map[int]Component)
+	components := make(map[int]utils.Component)
 	files, err := ioutil.ReadDir(path.Join(projectFolder, "components"))
 	if err != nil {
 		return err
 	}
 
 	for i, f := range files {
-		comp := Component{}
+		comp := utils.Component{}
 		n, p, c, err := compileComponent(projectFolder, f.Name(), w)
 		if err != nil {
 			return err
@@ -168,7 +169,7 @@ func appendComponents(projectFolder string, w *bufio.Writer) error {
 		components[i] = comp
 	}
 
-	var componentsSorted []Component
+	var componentsSorted []utils.Component
 	loopDetector := 0
 	for len(components) > 0 {
 		var forDelete []int
@@ -182,7 +183,7 @@ func appendComponents(projectFolder string, w *bufio.Writer) error {
 			for _, ac := range componentsSorted {
 				availableComps = append(availableComps, "Custom."+ac.Name)
 			}
-			if stringArrayContains(availableComps, c.Parent) {
+			if utils.StringArrayContains(availableComps, c.Parent) {
 				componentsSorted = append(componentsSorted, c)
 				forDelete = append(forDelete, i)
 				continue
@@ -193,7 +194,7 @@ func appendComponents(projectFolder string, w *bufio.Writer) error {
 		}
 		loopDetector += 1
 		if loopDetector > 99 {
-			return errors.New("Component inheritance loop detected")
+			return errors.New("component inheritance loop detected")
 		}
 	}
 
@@ -218,7 +219,7 @@ func appendComponents(projectFolder string, w *bufio.Writer) error {
 
 func appendMenu(projectFolder string, w *bufio.Writer) error {
 	fmt.Println("#compile res/data/menu.yml")
-	var menu []MenuEntry
+	var menu []utils.MenuEntry
 	data, err := ioutil.ReadFile(path.Join(projectFolder, "res", "data", "menu.yml"))
 	if err != nil {
 		return err
@@ -228,14 +229,14 @@ func appendMenu(projectFolder string, w *bufio.Writer) error {
 	if err != nil {
 		return err
 	}
-	menu = append(menu, MenuEntry{
-		"help",
-		"Help",
-		[]SubmenuEntry{
+	menu = append(menu, utils.MenuEntry{
+		Id:   "help",
+		Name: "Help",
+		Submenues: []utils.SubmenuEntry{
 			{
-				"about",
-				"About",
-				"Lib.Internal.ShowAboutDialog()"}}})
+				Id:       "about",
+				Name:     "About",
+				Function: "Lib.Internal.ShowAboutDialog()"}}})
 
 	var categories []string
 	var functions []string

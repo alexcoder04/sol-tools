@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"bufio"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/alexcoder04/arrowprint"
 	"github.com/alexcoder04/friendly"
+	"github.com/alexcoder04/sol-tools/utils"
 )
 
 func Build(pfolder string) error {
@@ -33,7 +34,7 @@ func Build(pfolder string) error {
 	}
 
 	arrowprint.Info1("Getting sol library")
-	libPath, err := GetLibrary()
+	libPath, err := utils.GetLibrary()
 	if err != nil {
 		return err
 	}

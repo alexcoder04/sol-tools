@@ -1,4 +1,4 @@
-package main
+package utils
 
 type MenuEntry struct {
 	Id        string         `yaml:"Id"`

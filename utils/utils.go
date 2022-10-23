@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"bufio"
@@ -8,7 +8,7 @@ import (
 )
 
 // TODO friendly use
-func stringArrayContains(arr []string, value string) bool {
+func StringArrayContains(arr []string, value string) bool {
 	for _, v := range arr {
 		if v == value {
 			return true
@@ -18,7 +18,7 @@ func stringArrayContains(arr []string, value string) bool {
 }
 
 // TODO friendly use
-func isNumber(s string) bool {
+func IsNumber(s string) bool {
 	_, err := strconv.Atoi(s)
 	return err == nil
 }
