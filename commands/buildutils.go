@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path"
 	"strings"
 
@@ -68,7 +69,7 @@ func appendFile(projectFolder string, libFolder string, filename string, type_ s
 
 func appendFolder(projectFolder string, libFolder string, subfolder string, type_ string, w *bufio.Writer) error {
 	err := appendFile(projectFolder, libFolder, path.Join(subfolder, "_init.lua"), type_, w)
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
@@ -87,6 +88,13 @@ func appendFolder(projectFolder string, libFolder string, subfolder string, type
 
 	for _, file := range files {
 		if file.Name() == "_init.lua" {
+			continue
+		}
+		if friendly.IsDir(path.Join(folderAbs, file.Name())) {
+			err := appendFolder(projectFolder, libFolder, path.Join(subfolder, file.Name()), type_, w)
+			if err != nil {
+				return err
+			}
 			continue
 		}
 		err := appendFile(projectFolder, libFolder, path.Join(subfolder, file.Name()), type_, w)
