@@ -17,6 +17,33 @@ func GetUrl(version string) string {
 	return fmt.Sprintf("https://github.com/alexcoder04/sol-lib/archive/refs/tags/v%s.zip", version)
 }
 
+func GetLatestVersion() (string, error) {
+	resp, err := http.Get("https://api.github.com/repos/alexcoder04/sol-lib/git/refs/tags")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	var releasesData []GitHubApiRef
+	err = json.Unmarshal(body, &releasesData)
+	if err != nil {
+		return "", err
+	}
+	latestIndex := 0
+	latestVersion := strings.TrimPrefix(releasesData[latestIndex].Ref, "refs/tags/v")
+	for i, r := range releasesData {
+		v := strings.TrimPrefix(r.Ref, "refs/tags/v")
+		if friendly.SemVersionGreater(v, latestVersion) {
+			latestVersion = v
+			latestIndex = i
+		}
+	}
+	return latestVersion, nil
+}
+
 func GetLibrary(version string) (string, string, error) {
 	if os.Getenv("SOL_USE_LOCAL_LIB") == "1" {
 		folder := os.Getenv("SOL_LOCAL_LIB_PATH")
@@ -27,30 +54,10 @@ func GetLibrary(version string) (string, string, error) {
 	}
 
 	if version == "latest" {
-		resp, err := http.Get("https://api.github.com/repos/alexcoder04/sol-lib/git/refs/tags")
+		version, err := GetLatestVersion()
 		if err != nil {
 			return "", "", err
 		}
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return "", "", err
-		}
-		var releasesData []GitHubApiRef
-		err = json.Unmarshal(body, &releasesData)
-		if err != nil {
-			return "", "", err
-		}
-		latestIndex := 0
-		latestVersion := strings.TrimPrefix(releasesData[latestIndex].Ref, "refs/tags/v")
-		for i, r := range releasesData {
-			v := strings.TrimPrefix(r.Ref, "refs/tags/v")
-			if friendly.SemVersionGreater(v, latestVersion) {
-				latestVersion = v
-				latestIndex = i
-			}
-		}
-		version = latestVersion
 		arrowprint.Info1("Found latest sol version: %s", version)
 	}
 

@@ -10,6 +10,7 @@ import (
 
 	"github.com/alexcoder04/arrowprint"
 	"github.com/alexcoder04/friendly"
+	"github.com/alexcoder04/sol-tools/utils"
 )
 
 // TODO until fix available in firendly
@@ -113,10 +114,14 @@ App:AddElement(hello_world_element)
 	}
 
 	arrowprint.Info1("Creating solproj.yml file")
-	err = WriteNewFile(path.Join(folder, "solproj.yml"), `
+	version, err := utils.GetLatestVersion()
+	if err != nil {
+		return err
+	}
+	err = WriteNewFile(path.Join(folder, "solproj.yml"), fmt.Sprintf(`
 RefreshRate: 0.5
-SolVersion: 0
-`)
+SolVersion: %s
+`, version))
 	if err != nil {
 		return err
 	}
