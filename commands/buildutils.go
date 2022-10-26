@@ -97,6 +97,9 @@ func appendFolder(projectFolder string, libFolder string, subfolder string, type
 			}
 			continue
 		}
+		if path.Ext(file.Name()) != ".lua" {
+			continue
+		}
 		err := appendFile(projectFolder, libFolder, path.Join(subfolder, file.Name()), type_, w)
 		if err != nil {
 			return err
