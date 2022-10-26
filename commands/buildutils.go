@@ -8,6 +8,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/alexcoder04/friendly"
 	"github.com/alexcoder04/sol-tools/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -144,7 +145,7 @@ func compileComponent(projectFolder string, name string, w *bufio.Writer) (strin
 			luaCode = append(luaCode, fmt.Sprintf("  self.%s = %s", key, val))
 			continue
 		}
-		if val == "true" || val == "false" || utils.IsNumber(val) {
+		if val == "true" || val == "false" || friendly.IsInt(val) {
 			luaCode = append(luaCode, fmt.Sprintf("  self.%s = %s", key, val))
 			continue
 		}
@@ -194,7 +195,7 @@ func appendComponents(projectFolder string, w *bufio.Writer) error {
 			for _, ac := range componentsSorted {
 				availableComps = append(availableComps, "Custom."+ac.Name)
 			}
-			if utils.StringArrayContains(availableComps, c.Parent) {
+			if friendly.ArrayContains(availableComps, c.Parent) {
 				componentsSorted = append(componentsSorted, c)
 				forDelete = append(forDelete, i)
 				continue
@@ -288,7 +289,7 @@ func appendMenu(projectFolder string, w *bufio.Writer) error {
 
 func appendMetadata(metadata map[string]string, w *bufio.Writer) error {
 	for key, val := range metadata {
-		if !utils.IsNumber(val) {
+		if !friendly.IsInt(val) {
 			val = fmt.Sprintf("\"%s\"", val)
 		}
 		_, err := w.WriteString(fmt.Sprintf("App.%s = %s\n", key, val))

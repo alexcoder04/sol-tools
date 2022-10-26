@@ -4,35 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 )
-
-// TODO friendly use
-func StringArrayContains(arr []string, value string) bool {
-	for _, v := range arr {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
-
-// TODO friendly use
-func IsNumber(s string) bool {
-	_, err := strconv.Atoi(s)
-	return err == nil
-}
-
-// TODO friendly add
-func Input(prompt string) (string, error) {
-	fmt.Print(prompt)
-	r := bufio.NewReader(os.Stdin)
-	ans, err := r.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-	return ans, nil
-}
 
 func Exit(code int, message string) {
 	if message != "" {

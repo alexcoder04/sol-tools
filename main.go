@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/alexcoder04/arrowprint"
+	"github.com/alexcoder04/friendly"
 	"github.com/alexcoder04/sol-tools/commands"
 	"github.com/alexcoder04/sol-tools/utils"
 )
@@ -50,24 +51,24 @@ func main() {
 		Run(flag.Args())
 	}
 
-	cmd, err := utils.Input("Type a Command: ")
+	cmd, err := friendly.Input("Type a Command: ")
 	if err != nil {
 		utils.Exit(1, "Error reading command")
 	}
 	cmd = strings.TrimSpace(cmd)
 	switch cmd {
 	case "new":
-		folder, err := utils.Input("Type or drag the folder to create the project in: ")
+		folder, err := friendly.Input("Type or drag the folder to create the project in: ")
 		if err != nil {
 			utils.Exit(1, "Error reading folder")
 		}
-		name, err := utils.Input("Type the name of your project: ")
+		name, err := friendly.Input("Type the name of your project: ")
 		if err != nil {
 			utils.Exit(1, "Error reading name")
 		}
 		Run([]string{cmd, strings.TrimSpace(folder), strings.TrimSpace(name)})
 	case "build":
-		folder, err := utils.Input("Type or drag the folder to build: ")
+		folder, err := friendly.Input("Type or drag the folder to build: ")
 		if err != nil {
 			utils.Exit(1, "Error reading folder")
 		}
