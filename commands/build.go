@@ -33,11 +33,18 @@ func Build(pfolder string) error {
 		}
 	}
 
-	arrowprint.Info1("Getting sol library")
-	libPath, err := utils.GetLibrary()
+	arrowprint.Info1("Reading project metadata")
+	metadata, err := getMetadata(folder)
 	if err != nil {
 		return err
 	}
+
+	arrowprint.Info1("Getting sol library")
+	libPath, version, err := utils.GetLibrary(metadata["SolVersion"])
+	if err != nil {
+		return err
+	}
+	metadata["SolVersion"] = version
 
 	f, err := os.Create(OUT_LUA)
 	if err != nil {
@@ -74,7 +81,7 @@ func Build(pfolder string) error {
 		return err
 	}
 	// project: metadata
-	err = appendMetadata(folder, w)
+	err = appendMetadata(metadata, w)
 	if err != nil {
 		return err
 	}

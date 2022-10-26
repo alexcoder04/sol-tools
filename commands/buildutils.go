@@ -12,6 +12,17 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+func getMetadata(projectFolder string) (map[string]string, error) {
+	var metadata map[string]string
+	data, err := ioutil.ReadFile(path.Join(projectFolder, "solproj.yml"))
+	if err != nil {
+		return metadata, err
+	}
+
+	err = yaml.Unmarshal(data, &metadata)
+	return metadata, err
+}
+
 func appendFile(projectFolder string, libFolder string, filename string, type_ string, w *bufio.Writer) error {
 	var prefix string = "."
 	if type_ == "include" {
@@ -275,20 +286,11 @@ func appendMenu(projectFolder string, w *bufio.Writer) error {
 	return err
 }
 
-func appendMetadata(projectFolder string, w *bufio.Writer) error {
-	fmt.Println("#compile solproj.yml")
-	var metadata map[string]string
-	data, err := ioutil.ReadFile(path.Join(projectFolder, "solproj.yml"))
-	if err != nil {
-		return err
-	}
-
-	err = yaml.Unmarshal(data, &metadata)
-	if err != nil {
-		return err
-	}
-
+func appendMetadata(metadata map[string]string, w *bufio.Writer) error {
 	for key, val := range metadata {
+		if !utils.IsNumber(val) {
+			val = fmt.Sprintf("\"%s\"", val)
+		}
 		_, err := w.WriteString(fmt.Sprintf("App.%s = %s\n", key, val))
 		if err != nil {
 			return err

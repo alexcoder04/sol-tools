@@ -17,3 +17,10 @@ type Component struct {
 	Parent string
 	Code   []string
 }
+
+type GitHubApiRef struct {
+	Ref    string            `json:"ref"`
+	NodeId string            `json:"node_id"`
+	Url    string            `json:"url"`
+	Object map[string]string `json:"object"`
+}
