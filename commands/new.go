@@ -73,7 +73,7 @@ func New(pfolder string, projectName string) error {
 
 	arrowprint.Warn1("Generating Makefile")
 	err = WriteNewFile(path.Join(folder, "Makefile"), fmt.Sprintf(`
-NAME = helloworld
+NAME = %s
 TEMP_LUA = %s/out.lua
 OUT_FILE = %s/$(NAME).tns
 
@@ -88,7 +88,7 @@ clean:
 
 upload:
 	uploadnspire $(OUT_FILE)
-`, os.TempDir(), os.TempDir()))
+`, projectName, os.TempDir(), os.TempDir()))
 	if err != nil {
 		return err
 	}
