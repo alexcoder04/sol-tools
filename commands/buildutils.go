@@ -153,7 +153,7 @@ func compileComponent(projectFolder string, name string, w *bufio.Writer) (strin
 			continue
 		}
 		if key == "Color" && strings.HasPrefix(val, "Lib.Colors.") {
-			luaCode = append(luaCode, fmt.Sprintf("  self.%s = %s", key, val))
+			luaCode = append(luaCode, fmt.Sprintf("  self.%s = \"%s\"", key, val[11:]))
 			continue
 		}
 		if val == "true" || val == "false" || friendly.IsInt(val) {
