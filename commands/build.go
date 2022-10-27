@@ -102,9 +102,11 @@ func Build(pfolder string) error {
 	}
 
 	// library: events
-	err = appendFile(folder, libPath, "events.lua", "include", w)
-	if err != nil {
-		return err
+	for _, file := range []string{"events-system.lua", "events-user.lua"} {
+		err = appendFile(folder, libPath, file, "include", w)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = w.Flush()
