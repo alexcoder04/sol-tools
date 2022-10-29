@@ -10,7 +10,8 @@ import (
 	"strings"
 
 	"github.com/alexcoder04/arrowprint"
-	"github.com/alexcoder04/friendly"
+	"github.com/alexcoder04/friendly/v2"
+	"github.com/alexcoder04/friendly/v2/ffiles"
 )
 
 func GetUrl(version string) string {
@@ -47,7 +48,7 @@ func GetLatestVersion() (string, error) {
 func GetLibrary(version string) (string, string, error) {
 	if os.Getenv("SOL_USE_LOCAL_LIB") == "1" {
 		folder := os.Getenv("SOL_LOCAL_LIB_PATH")
-		if !friendly.IsDir(folder) {
+		if !ffiles.IsDir(folder) {
 			return "", "<local>", os.ErrNotExist
 		}
 		return folder, "", nil
@@ -65,7 +66,7 @@ func GetLibrary(version string) (string, string, error) {
 	zipFile := path.Join(os.TempDir(), "sol.zip")
 	libFolder := path.Join(strings.TrimRight(zipFile, ".zip"), fmt.Sprintf("sol-lib-%s", version))
 
-	if friendly.IsDir(libFolder) {
+	if ffiles.IsDir(libFolder) {
 		return libFolder, version, nil
 	}
 

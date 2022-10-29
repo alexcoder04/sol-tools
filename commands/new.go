@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"os"
@@ -9,30 +8,9 @@ import (
 	"strings"
 
 	"github.com/alexcoder04/arrowprint"
-	"github.com/alexcoder04/friendly"
+	"github.com/alexcoder04/friendly/v2/ffiles"
 	"github.com/alexcoder04/sol-tools/utils"
 )
-
-// TODO until fix available in firendly
-func WriteNewFile(file string, content string) error {
-	if friendly.Exists(file) {
-		return os.ErrExist
-	}
-
-	f, err := os.Create(file)
-	if err != nil {
-		return err
-	}
-
-	w := bufio.NewWriter(f)
-	_, err = w.WriteString(content)
-	if err != nil {
-		return err
-	}
-
-	err = w.Flush()
-	return err
-}
 
 func New(pfolder string, projectName string) error {
 	arrowprint.InfoC("Creating new project")
@@ -47,7 +25,11 @@ func New(pfolder string, projectName string) error {
 	folder := path.Join(pfolder, projectName)
 
 	arrowprint.Info1("Checking if project already exists")
-	if friendly.Exists(folder) {
+	exists, err := ffiles.Exists(folder)
+	if err != nil {
+		return err
+	}
+	if exists {
 		return os.ErrExist
 	}
 
@@ -67,13 +49,13 @@ func New(pfolder string, projectName string) error {
 
 	arrowprint.Info0("Generating boilerplate code")
 	arrowprint.Info1("Creating menu.yml file")
-	err := WriteNewFile(path.Join(folder, "res", "data", "menu.yml"), "[]")
+	err = ffiles.WriteNewFile(path.Join(folder, "res", "data", "menu.yml"), "[]")
 	if err != nil {
 		return err
 	}
 
 	arrowprint.Warn1("Generating Makefile")
-	err = WriteNewFile(path.Join(folder, "Makefile"), fmt.Sprintf(`
+	err = ffiles.WriteNewFile(path.Join(folder, "Makefile"), fmt.Sprintf(`
 NAME = %s
 TEMP_LUA = %s/out.lua
 OUT_FILE = %s/$(NAME).tns
@@ -95,7 +77,7 @@ upload:
 	}
 
 	arrowprint.Info1("Generating README.md file")
-	err = WriteNewFile(
+	err = ffiles.WriteNewFile(
 		path.Join(folder, "README.md"),
 		fmt.Sprintf("# %s\nAn app for the ti-nspire", projectName))
 	if err != nil {
@@ -103,7 +85,7 @@ upload:
 	}
 
 	arrowprint.Info1("Creating app.lua file")
-	err = WriteNewFile(path.Join(folder, "app.lua"), `
+	err = ffiles.WriteNewFile(path.Join(folder, "app.lua"), `
 hello_world_element = Components.Base.TextField:new()
 hello_world_element.Label = "Hello World"
 
@@ -118,7 +100,7 @@ App:AddElement(hello_world_element)
 	if err != nil {
 		return err
 	}
-	err = WriteNewFile(path.Join(folder, "solproj.yml"), fmt.Sprintf(`
+	err = ffiles.WriteNewFile(path.Join(folder, "solproj.yml"), fmt.Sprintf(`
 RefreshRate: 0.5
 SolVersion: %s
 `, version))
@@ -127,7 +109,7 @@ SolVersion: %s
 	}
 
 	arrowprint.Info1("Creating .gitignore file")
-	err = WriteNewFile(path.Join(folder, ".gitignore"), `
+	err = ffiles.WriteNewFile(path.Join(folder, ".gitignore"), `
 out.lua
 *.tns
 `)

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/alexcoder04/arrowprint"
-	"github.com/alexcoder04/friendly"
+	"github.com/alexcoder04/friendly/v2/ffiles"
 	"github.com/alexcoder04/sol-tools/utils"
 )
 
@@ -20,13 +20,14 @@ func Build(pfolder string) error {
 		return err
 	}
 
-	if !friendly.IsDir(folder) {
+	if !ffiles.IsDir(folder) {
 		return os.ErrNotExist
 	}
 
 	OUT_LUA := path.Join(folder, "out.lua")
 
-	if friendly.Exists(OUT_LUA) {
+	exists, err := ffiles.Exists(OUT_LUA)
+	if exists || err != nil {
 		err := os.RemoveAll(OUT_LUA)
 		if err != nil {
 			return err
@@ -87,7 +88,7 @@ func Build(pfolder string) error {
 	}
 	// project: lua code
 	for _, file := range []string{"app.lua", "init.lua", "hooks.lua"} {
-		if !friendly.IsFile(path.Join(folder, file)) && file != "app.lua" {
+		if !ffiles.IsFile(path.Join(folder, file)) && file != "app.lua" {
 			continue
 		}
 		err := appendFile(folder, libPath, file, "process", w)

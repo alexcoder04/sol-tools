@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/alexcoder04/arrowprint"
-	"github.com/alexcoder04/friendly"
+	"github.com/alexcoder04/friendly/v2"
 	"github.com/alexcoder04/sol-tools/commands"
 	"github.com/alexcoder04/sol-tools/utils"
 )

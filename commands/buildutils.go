@@ -9,7 +9,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/alexcoder04/friendly"
+	"github.com/alexcoder04/friendly/v2"
+	"github.com/alexcoder04/friendly/v2/ffiles"
 	"github.com/alexcoder04/sol-tools/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -90,7 +91,7 @@ func appendFolder(projectFolder string, libFolder string, subfolder string, type
 		if file.Name() == "_init.lua" {
 			continue
 		}
-		if friendly.IsDir(path.Join(folderAbs, file.Name())) {
+		if ffiles.IsDir(path.Join(folderAbs, file.Name())) {
 			err := appendFolder(projectFolder, libFolder, path.Join(subfolder, file.Name()), type_, w)
 			if err != nil {
 				return err
