@@ -3,7 +3,7 @@ module github.com/alexcoder04/sol-tools
 go 1.18
 
 require (
-	github.com/alexcoder04/arrowprint v0.0.1
+	github.com/alexcoder04/arrowprint v1.0.0
 	github.com/alexcoder04/friendly/v2 v2.0.0
 	gopkg.in/yaml.v3 v3.0.1
 )
