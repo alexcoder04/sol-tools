@@ -116,6 +116,9 @@ func appendData(projectFolder string, w *bufio.Writer) error {
 		return err
 	}
 	for _, file := range files {
+		if file.Name() == "menu.yml" {
+			continue
+		}
 		fmt.Printf("#compile res/data/%s -> skipping!\n", file.Name())
 		// TODO
 	}
@@ -145,6 +148,9 @@ func compileComponent(projectFolder string, name string, w *bufio.Writer) (strin
 		if key == "Inherit" {
 			continue
 		}
+		if strings.HasSuffix(key, "PreserveString") {
+			continue
+		}
 		if key == "OnClick" {
 			luaCode = append(luaCode, fmt.Sprintf("  function self:%s() %s end", key, val))
 			continue
@@ -157,11 +163,11 @@ func compileComponent(projectFolder string, name string, w *bufio.Writer) (strin
 			luaCode = append(luaCode, fmt.Sprintf("  self.%s = \"%s\"", key, val[11:]))
 			continue
 		}
-		if val == "true" || val == "false" || friendly.IsInt(val) {
+		if (val == "true" || val == "false" || friendly.IsInt(val)) && comp[key+"PreserveString"] != "true" {
 			luaCode = append(luaCode, fmt.Sprintf("  self.%s = %s", key, val))
 			continue
 		}
-		if strings.HasPrefix(val, "[") && strings.HasSuffix(val, "]") {
+		if strings.HasPrefix(val, "[") && strings.HasSuffix(val, "]") && comp[key+"PreserveString"] != "true" {
 			luaCode = append(luaCode, fmt.Sprintf("  self.%s = {%s}", key, val[1:len(val)-2]))
 			continue
 		}

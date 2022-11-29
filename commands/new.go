@@ -57,8 +57,8 @@ func New(pfolder string, projectName string) error {
 	arrowprint.Warn1("Generating Makefile")
 	err = ffiles.WriteNewFile(path.Join(folder, "Makefile"), fmt.Sprintf(`
 NAME = %s
-TEMP_LUA = %s/out.lua
-OUT_FILE = %s/$(NAME).tns
+TEMP_LUA = out.lua
+OUT_FILE = $(NAME).tns
 
 all: clean build upload
 
@@ -71,7 +71,7 @@ clean:
 
 upload:
 	uploadnspire $(OUT_FILE)
-`, projectName, os.TempDir(), os.TempDir()))
+`, projectName))
 	if err != nil {
 		return err
 	}
@@ -117,6 +117,6 @@ out.lua
 		return err
 	}
 
-	arrowprint.Suc0("Your project '%s' has been set up successfully", projectName)
+	arrowprint.Suc0("Your project '%s' has been set up successfully in %s", projectName, folder)
 	return nil
 }
