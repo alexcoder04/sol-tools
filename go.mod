@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/alexcoder04/arrowprint v1.0.0
-	github.com/alexcoder04/friendly/v2 v2.1.0
+	github.com/alexcoder04/friendly/v2 v2.1.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
